@@ -18,6 +18,7 @@ ARGV.grep(/\w+_spec\.rb/).empty? && ActiveRecord::Schema.define(version: 1) do
     t.column :account_id, :integer
     t.column :name, :string
     t.column :project_id, :integer
+    t.column :deleted, :boolean, default: false
   end
 
   create_table :tasks, force: true, partition_key: :account_id do |t|
@@ -132,6 +133,8 @@ end
 class Manager < ActiveRecord::Base
   multi_tenant :account
   belongs_to :project
+
+  default_scope { where(deleted: false) }
 end
 
 class Task < ActiveRecord::Base
